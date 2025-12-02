@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Account - Reaper Bio Links</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .grain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.03;
+            z-index: 100;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 80px 80px;
+            pointer-events: none;
+            mask-image: radial-gradient(ellipse 80% 50% at 50% 40%, black 0%, transparent 100%);
+        }
+
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            pointer-events: none;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .glow-orb-1 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(100, 100, 100, 0.3) 0%, transparent 70%);
+            top: -200px;
+            left: 20%;
+            animation-delay: 0s;
+        }
+
+        .glow-orb-2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(80, 80, 80, 0.25) 0%, transparent 70%);
+            top: 100px;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(1.1); }
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0 24px;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            padding: 24px 0;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        nav {
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            height: 36px;
+        }
+
+        .logo img {
+            height: 100%;
+            width: auto;
+            filter: brightness(1.1) contrast(1.1);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 10px 24px;
+            border-radius: 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            letter-spacing: -0.01em;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.95);
+            transform: translateY(-1px);
+        }
+
+        .nav-link:active {
+            transform: translateY(0);
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 40px 0;
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-container {
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            text-align: center;
+        }
+
+        .icon {
+            font-size: 52px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 8px;
+            letter-spacing: -0.03em;
+            background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.7) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 32px;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+            line-height: 1.5;
+        }
+
+        .code-inputs {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 32px;
+        }
+
+        .code-input {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 24px;
+            font-weight: 600;
+            text-align: center;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: -0.01em;
+            font-family: 'SF Mono', 'Monaco', monospace;
+        }
+
+        .code-input:focus {
+            border-color: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+            transform: scale(1.05);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+        }
+
+        .code-input.filled {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+            color: #0a0a0a;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: -0.01em;
+            box-shadow: 0 4px 16px rgba(255, 255, 255, 0.1);
+            margin-top: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #ffffff, rgba(255, 255, 255, 0.95));
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 255, 255, 0.15);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .resend-link {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .resend-link a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+            position: relative;
+        }
+
+        .resend-link a:hover {
+            color: #ffffff;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 13px;
+            margin-top: 12px;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(-8px);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .error-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .success-message {
+            color: #10b981;
+            font-size: 13px;
+            margin-top: 12px;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(-8px);
+            transition: all 0.3s ease;
+        }
+
+        .success-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .timer {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 20px;
+            }
+
+            nav {
+                padding: 10px 16px;
+            }
+
+            .nav-links {
+                gap: 4px;
+            }
+
+            .nav-link {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+
+            .form-container {
+                padding: 32px 24px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .code-inputs {
+                gap: 8px;
+            }
+
+            .code-input {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+
+            .icon {
+                font-size: 44px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="grain"></div>
+    <div class="grid-overlay"></div>
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+
+    <div class="container">
+        <header>
+            <nav>
+                <div class="logo">
+                    <img src="reaper.png" alt="Reaper" onerror="this.style.display='none'">
+                </div>
+
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">Back to Home</a>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            <div class="form-container">
+                <div class="icon">🔒</div>
+                <h1>Verify Your Account</h1>
+                <p class="subtitle">Enter the 6-digit verification code sent to your email address</p>
+
+                <form id="verifyForm">
+                    <div class="code-inputs">
+                        <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                        <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                        <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                        <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                        <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                        <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                    </div>
+
+                    <button type="submit" class="submit-btn">Verify & Continue</button>
+                    
+                    <div class="error-message" id="error-message"></div>
+                    <div class="success-message" id="success-message"></div>
+                </form>
+
+                <div class="resend-link">
+                    Didn't receive the code? <a href="#" onclick="resendCode()">Resend code</a>
+                    <div class="timer" id="timer"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('.code-input');
+            let resendTimer = 30;
+            let canResend = false;
+            
+            function updateTimer() {
+                const timerElement = document.getElementById('timer');
+                if (resendTimer > 0) {
+                    timerElement.textContent = `Resend available in ${resendTimer}s`;
+                    resendTimer--;
+                    setTimeout(updateTimer, 1000);
+                } else {
+                    timerElement.textContent = '';
+                    canResend = true;
+                }
+            }
+
+            updateTimer();
+
+            // Auto-focus and move between inputs
+            inputs.forEach((input, index) => {
+                input.addEventListener('input', function(e) {
+                    const value = this.value.replace(/[^0-9]/g, '');
+                    this.value = value;
+                    
+                    if (value && index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                    
+                    this.classList.toggle('filled', !!value);
+                    hideMessages();
+                });
+
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Backspace' && !this.value && index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                });
+
+                input.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const pasteData = e.clipboardData.getData('text').replace(/[^0-9]/g, '');
+                    
+                    if (pasteData.length >= 6) {
+                        for (let i = 0; i < 6; i++) {
+                            if (inputs[i]) {
+                                inputs[i].value = pasteData[i] || '';
+                                inputs[i].classList.toggle('filled', !!pasteData[i]);
+                            }
+                        }
+                        if (inputs[5]) inputs[5].focus();
+                    }
+                });
+            });
+
+            const form = document.getElementById('verifyForm');
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                verifyCode();
+            });
+
+            // Focus first input
+            inputs[0].focus();
+        });
+
+        function showError(message) {
+            hideMessages();
+            const element = document.getElementById('error-message');
+            element.innerHTML = `✗ ${message}`;
+            element.classList.add('show');
+            
+            // Shake animation for error
+            const inputs = document.querySelectorAll('.code-input');
+            inputs.forEach(input => {
+                input.style.animation = 'none';
+                setTimeout(() => {
+                    input.style.animation = 'shake 0.5s';
+                }, 10);
+            });
+        }
+
+        function showSuccess(message) {
+            hideMessages();
+            const element = document.getElementById('success-message');
+            element.innerHTML = `✓ ${message}`;
+            element.classList.add('show');
+        }
+
+        function hideMessages() {
+            document.getElementById('error-message').classList.remove('show');
+            document.getElementById('success-message').classList.remove('show');
+        }
+
+        async function verifyCode() {
+            hideMessages();
+            
+            const inputs = document.querySelectorAll('.code-input');
+            let code = '';
+            let allFilled = true;
+
+            inputs.forEach(input => {
+                code += input.value;
+                if (!input.value) allFilled = false;
+            });
+
+            if (!allFilled) {
+                showError('Please enter the complete 6-digit code');
+                inputs.forEach(input => {
+                    if (!input.value) input.focus();
+                });
+                return;
+            }
+
+            if (code.length !== 6) {
+                showError('Code must be 6 digits');
+                return;
+            }
+
+            const email = localStorage.getItem('verificationEmail');
+            if (!email) {
+                showError('Session expired. Please start over.');
+                return;
+            }
+
+            const submitBtn = document.querySelector('.submit-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Verifying...';
+            submitBtn.disabled = true;
+
+            try {
+                // Simulate API call - replace with your actual endpoint
+                const response = await fetch('/api/verify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, code })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showSuccess('Verification successful! Redirecting...');
+                    if (data.token) {
+                        localStorage.setItem('authToken', data.token);
+                    }
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1500);
+                } else {
+                    showError(data.error || 'Verification failed');
+                    submitBtn.disabled = false;
+                }
+            } catch (error) {
+                showError('Failed to connect to server');
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        async function resendCode() {
+            if (!canResend) {
+                showError('Please wait before resending');
+                return;
+            }
+
+            const email = localStorage.getItem('verificationEmail');
+            if (!email) {
+                showError('No email found. Please start over.');
+                return;
+            }
+
+            const resendLink = document.querySelector('.resend-link a');
+            const originalText = resendLink.textContent;
+            resendLink.textContent = 'Sending...';
+            resendLink.style.pointerEvents = 'none';
+
+            try {
+                // Simulate API call - replace with your actual endpoint
+                const response = await fetch('/api/resend-code', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showSuccess('New verification code sent!');
+                    canResend = false;
+                    resendTimer = 30;
+                    updateTimer();
+                } else {
+                    showError('Failed to resend code');
+                }
+            } catch (error) {
+                showError('Failed to connect to server');
+            } finally {
+                resendLink.textContent = originalText;
+                resendLink.style.pointerEvents = '';
+            }
+        }
+
+        // Add shake animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                75% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

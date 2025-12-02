@@ -1,0 +1,94 @@
+{
+  "admin": {
+    "username": "admin",
+    "displayName": "Admin",
+    "bio": "Site Administrator",
+    "profilePic": "/public/img/default-avatar.png",
+    "banner": "/public/img/default-banner.jpg",
+    "background": "/public/img/default-bg.mp4",
+    "music": null,
+    "theme": "dark",
+    "badges": [
+      "staff",
+      "certif",
+      "dev"
+    ],
+    "socialLinks": {
+      "discord": "https://discord.com/users/951831643491029012",
+      "github": "https://github.com/admin",
+      "spotify": null,
+      "twitter": null,
+      "instagram": null,
+      "youtube": null,
+      "twitch": null,
+      "website": null,
+      "roblox": null
+    },
+    "customizations": {
+      "cardTilt": true,
+      "cardTransparency": 0.8,
+      "cardBlur": 10,
+      "roundedCorners": true,
+      "nameEffect": "glow",
+      "nameParticles": "none",
+      "backgroundParticles": "none",
+      "nameColor": "#ffffff",
+      "backgroundMusicVolume": 50,
+      "badgeGlow": true,
+      "badgeBackground": true,
+      "badgeGlowColor": "#ffffff",
+      "iconGlow": false,
+      "iconBackground": true,
+      "iconGlowColor": "#ffffff"
+    },
+    "createdAt": "2025-12-02T13:06:08.521Z",
+    "updatedAt": "2025-12-02T13:06:08.521Z",
+    "viewCount": 0
+  },
+  "juju": {
+    "username": "juju",
+    "displayName": "juju",
+    "bio": "Welcome to my NM1 Bio Link!",
+    "profilePic": "/public/uploads/1764681939893-411029680.webp",
+    "banner": "/public/uploads/1764681939894-607251296.gif",
+    "background": "/public/uploads/1764681939903-699992926.mp4",
+    "music": "/public/uploads/1764681940544-828423856.mp3",
+    "theme": "dark",
+    "badges": [
+      "staff",
+      "dev",
+      "bughunter",
+      "earlysupporter"
+    ],
+    "socialLinks": {
+      "discord": "https://discord.gg/augst",
+      "github": "",
+      "spotify": "",
+      "twitter": "",
+      "instagram": "",
+      "youtube": "",
+      "twitch": "",
+      "website": ""
+    },
+    "customizations": {
+      "cardTilt": true,
+      "cardTransparency": 0.8,
+      "cardBlur": 10,
+      "roundedCorners": true,
+      "nameEffect": "none",
+      "nameParticles": "none",
+      "backgroundParticles": "none",
+      "nameColor": "#ffffff",
+      "backgroundMusicVolume": 83,
+      "badgeGlow": true,
+      "badgeBackground": true,
+      "badgeGlowColor": "#ffffff",
+      "iconGlow": false,
+      "iconBackground": true,
+      "iconGlowColor": "#ffffff"
+    },
+    "createdAt": "2025-12-02T13:12:47.389Z",
+    "updatedAt": "2025-12-02T13:27:01.735Z",
+    "viewCount": 12
+  }
+}

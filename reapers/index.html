@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reapers.lol</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .grain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.03;
+            z-index: 100;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 80px 80px;
+            pointer-events: none;
+            mask-image: radial-gradient(ellipse 80% 50% at 50% 40%, black 0%, transparent 100%);
+        }
+
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            pointer-events: none;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .glow-orb-1 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(100, 100, 100, 0.3) 0%, transparent 70%);
+            top: -200px;
+            left: 20%;
+            animation-delay: 0s;
+        }
+
+        .glow-orb-2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(80, 80, 80, 0.25) 0%, transparent 70%);
+            top: 100px;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(1.1); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        header {
+            padding: 24px 0;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        nav {
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            height: 36px;
+        }
+
+        .logo img {
+            height: 100%;
+            width: auto;
+            filter: brightness(1.1) contrast(1.1);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 10px 24px;
+            border-radius: 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            letter-spacing: -0.01em;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.95);
+            transform: translateY(-1px);
+        }
+
+        .nav-link:active {
+            transform: translateY(0);
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 120px);
+            text-align: center;
+            padding: 60px 0;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 100px;
+            padding: 8px 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 32px;
+            backdrop-filter: blur(10px);
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+
+        .badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: #22c55e;
+            border-radius: 50%;
+            box-shadow: 0 0 12px #22c55e;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: clamp(48px, 8vw, 84px);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            letter-spacing: -0.03em;
+            background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.7) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 0.6s ease-out 0.3s both;
+        }
+
+        .subtitle {
+            font-size: clamp(16px, 2vw, 20px);
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 56px;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+            animation: fadeInUp 0.6s ease-out 0.4s both;
+        }
+
+        .url-form {
+            width: 100%;
+            max-width: 580px;
+            animation: fadeInUp 0.6s ease-out 0.5s both;
+        }
+
+        .url-container {
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 8px;
+            margin-bottom: 16px;
+            box-shadow:
+                0 0 0 1px rgba(255, 255, 255, 0.03),
+                0 20px 40px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .url-container:focus-within {
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow:
+                0 0 0 1px rgba(255, 255, 255, 0.08),
+                0 24px 48px rgba(0, 0, 0, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .url-display {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 16px 20px;
+            gap: 4px;
+        }
+
+        .url-prefix {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 15px;
+            font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+            font-weight: 500;
+            letter-spacing: -0.01em;
+            user-select: none;
+        }
+
+        .url-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 15px;
+            font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+            font-weight: 500;
+            letter-spacing: -0.01em;
+            outline: none;
+        }
+
+        .url-input::placeholder {
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        .create-btn {
+            width: 100%;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #0a0a0a;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: -0.01em;
+            box-shadow: 0 4px 16px rgba(255, 255, 255, 0.1);
+        }
+
+        .create-btn:hover {
+            background: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 255, 255, 0.15);
+        }
+
+        .create-btn:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 13px;
+            margin-top: 12px;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(-8px);
+            transition: all 0.3s ease;
+        }
+
+        .error-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 24px;
+            }
+
+            nav {
+                padding: 10px 16px;
+            }
+
+            .nav-links {
+                gap: 4px;
+            }
+
+            .nav-link {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+
+            .badge {
+                font-size: 12px;
+                padding: 6px 16px;
+            }
+
+            .subtitle {
+                margin-bottom: 40px;
+            }
+
+            .url-form {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="grain"></div>
+    <div class="grid-overlay"></div>
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+
+    <div class="container">
+        <header>
+            <nav>
+                <div class="logo">
+                    <img src="reaper.png" alt="Reaper" onerror="this.style.display='none'">
+                </div>
+
+                <div class="nav-links">
+                    <a href="login.html" class="nav-link">Login</a>
+                    <a href="register.html" class="nav-link">Register</a>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            <div class="badge">
+                <span>NM1 Bio Link Out</span>
+            </div>
+
+            <h1>A New Way To Show<br>Yourself Online.</h1>
+
+            <p class="subtitle">The Best Free Bio Link Website Out Right Now</p>
+
+            <div class="url-form">
+                <div class="url-container">
+                    <div class="url-display">
+                        <span class="url-prefix" id="current-domain">localhost:3000/</span>
+                        <input
+                            type="text"
+                            class="url-input"
+                            placeholder="typeusernamehere"
+                            id="username"
+                            autocomplete="off"
+                            spellcheck="false"
+                        >
+                    </div>
+                </div>
+                <button class="create-btn" onclick="createAccount()">Create Your Link</button>
+                <div class="error-message" id="error-message"></div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const domainElement = document.getElementById('current-domain');
+            domainElement.textContent = window.location.host + '/';
+
+            const input = document.getElementById('username');
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    createAccount();
+                }
+            });
+
+            input.addEventListener('input', function() {
+                hideError();
+            });
+        });
+
+        function showError(message) {
+            const errorElement = document.getElementById('error-message');
+            errorElement.textContent = message;
+            errorElement.classList.add('show');
+        }
+
+        function hideError() {
+            const errorElement = document.getElementById('error-message');
+            errorElement.classList.remove('show');
+        }
+
+        function createAccount() {
+            const username = document.getElementById('username').value.trim();
+
+            if (!username) {
+                showError('Please enter a username');
+                return;
+            }
+
+            if (username.length < 3) {
+                showError('Username must be at least 3 characters');
+                return;
+            }
+
+            if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+                showError('Username can only contain letters, numbers, and underscores');
+                return;
+            }
+
+            hideError();
+            localStorage.setItem('tempUsername', username);
+            window.location.href = 'register.html';
+        }
+    </script>
+</body>
+</html>

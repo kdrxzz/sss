@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="#2F3136" name="theme-color">
+    <title>Admin Panel - NM1 Bio Links</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Satoshi", sans-serif;
+            width: 100%;
+            min-height: 100vh;
+            background-color: #0a0a0a;
+            color: white;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+            padding: 20px;
+        }
+
+        .login-box {
+            background: rgba(20, 20, 20, 0.9);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .login-box h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+            color: #fff;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .login-box input:focus {
+            outline: none;
+            border-color: #7289da;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #7289da 0%, #5a6fc1 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .login-box button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(114, 137, 218, 0.3);
+        }
+
+        .admin-container {
+            display: none;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-header h1 {
+            font-size: 32px;
+            background: linear-gradient(90deg, #7289da, #5a6fc1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(20, 20, 20, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-card .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #7289da;
+        }
+
+        .users-table-container {
+            background: rgba(20, 20, 20, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .users-table th {
+            text-align: left;
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 12px;
+        }
+
+        .users-table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .users-table tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .username-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .badge-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .badge-option {
+            padding: 5px 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .badge-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .badge-option.selected {
+            background: #7289da;
+            color: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #43b581 0%, #3aa374 100%);
+            color: white;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 181, 129, 0.3);
+        }
+
+        .btn-view {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-view:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .error-message {
+            color: #f04747;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .success-message {
+            color: #43b581;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .badge-preview {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .badge-preview-item {
+            padding: 3px 8px;
+            background: rgba(114, 137, 218, 0.2);
+            border-radius: 12px;
+            font-size: 11px;
+            color: #7289da;
+        }
+
+        /* Scrollbar */
+        *::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+
+        *::-webkit-scrollbar-track {
+            border-radius: 5px;
+            background-color: rgba(22, 22, 22, 0.5);
+        }
+
+        *::-webkit-scrollbar-thumb {
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .login-box {
+                padding: 30px 20px;
+            }
+            
+            .admin-container {
+                padding: 15px;
+            }
+            
+            .admin-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .users-table th, .users-table td {
+                padding: 10px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@1&amp;f[]=array@400&amp;display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Login Section -->
+    <div class="login-container" id="loginSection">
+        <div class="login-box">
+            <h1>🔐 Admin Panel</h1>
+            <input type="password" id="passwordInput" placeholder="Enter Admin Password" autocomplete="off">
+            <button id="loginBtn">Login</button>
+            <div id="loginMessage" class="error-message"></div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div class="admin-container" id="adminDashboard">
+        <div class="admin-header">
+            <h1>👑 Admin Dashboard</h1>
+            <button class="logout-btn" id="logoutBtn">Logout</button>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Users</h3>
+                <div class="stat-number" id="totalUsers">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Profiles</h3>
+                <div class="stat-number" id="totalProfiles">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Admin Users</h3>
+                <div class="stat-number" id="adminUsers">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Today's Views</h3>
+                <div class="stat-number" id="todayViews">0</div>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="users-table-container">
+            <h2 style="margin-bottom: 20px;">👥 User Management</h2>
+            <div id="usersLoading" class="loading">Loading users...</div>
+            <table class="users-table" id="usersTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Created</th>
+                        <th>Badges</th>
+                        <th>Profile Views</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <!-- Users will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let adminSession = null;
+        const badgesList = ['staff', 'certif', 'dev', 'premium', 'booster', 'bughunter', 'earlysupporter', 'graphic'];
+
+        // DOM Elements
+        const loginSection = document.getElementById('loginSection');
+        const adminDashboard = document.getElementById('adminDashboard');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginMessage = document.getElementById('loginMessage');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const usersTable = document.getElementById('usersTable');
+        const usersTableBody = document.getElementById('usersTableBody');
+        const usersLoading = document.getElementById('usersLoading');
+
+        // Stats elements
+        const totalUsersEl = document.getElementById('totalUsers');
+        const totalProfilesEl = document.getElementById('totalProfiles');
+        const adminUsersEl = document.getElementById('adminUsers');
+        const todayViewsEl = document.getElementById('todayViews');
+
+        // Login function
+        async function login() {
+            const password = passwordInput.value.trim();
+            
+            if (!password) {
+                showLoginMessage('Please enter password', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/admin/verify-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ password })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    adminSession = data.session;
+                    localStorage.setItem('adminSession', adminSession);
+                    loginSection.style.display = 'none';
+                    adminDashboard.style.display = 'block';
+                    loadUsers();
+                } else {
+                    showLoginMessage(data.error || 'Invalid password', 'error');
+                }
+            } catch (error) {
+                showLoginMessage('Connection error. Please try again.', 'error');
+                console.error('Login error:', error);
+            }
+        }
+
+        // Logout function
+        function logout() {
+            adminSession = null;
+            localStorage.removeItem('adminSession');
+            adminDashboard.style.display = 'none';
+            loginSection.style.display = 'flex';
+            passwordInput.value = '';
+            loginMessage.textContent = '';
+        }
+
+        // Load users function
+        async function loadUsers() {
+            if (!adminSession) return;
+
+            try {
+                const response = await fetch('/api/admin/all-users', {
+                    headers: {
+                        'Authorization': adminSession
+                    }
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayUsers(data.users);
+                    updateStats(data.users);
+                    usersLoading.style.display = 'none';
+                    usersTable.style.display = 'table';
+                } else {
+                    usersLoading.innerHTML = `<div class="error-message">${data.error || 'Failed to load users'}</div>`;
+                }
+            } catch (error) {
+                usersLoading.innerHTML = '<div class="error-message">Connection error. Please refresh.</div>';
+                console.error('Load users error:', error);
+            }
+        }
+
+        // Display users in table
+        function displayUsers(users) {
+            usersTableBody.innerHTML = '';
+            
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                
+                // Calculate profile views (default to 0 if no profile)
+                const profileViews = user.profile?.viewCount || 0;
+                const userBadges = user.profile?.badges || [];
+                
+                // Format created date
+                const createdDate = new Date(user.createdAt);
+                const formattedDate = createdDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+                
+                row.innerHTML = `
+                    <td>
+                        <div class="username-cell">
+                            <strong>${user.username}</strong>
+                            ${user.isAdmin ? '<span style="color: #7289da; font-size: 12px;">(Admin)</span>' : ''}
+                        </div>
+                    </td>
+                    <td>${user.email}</td>
+                    <td>${formattedDate}</td>
+                    <td>
+                        <div class="badge-preview" id="badgePreview-${user.username}">
+                            ${userBadges.length > 0 
+                                ? userBadges.map(badge => `<span class="badge-preview-item">${badge}</span>`).join('')
+                                : '<span style="color: rgba(255,255,255,0.3)">No badges</span>'
+                            }
+                        </div>
+                        <div class="badge-selector" id="badgeSelector-${user.username}" style="display: none;">
+                            ${badgesList.map(badge => `
+                                <div class="badge-option ${userBadges.includes(badge) ? 'selected' : ''}" 
+                                     data-badge="${badge}"
+                                     onclick="toggleBadge('${user.username}', '${badge}')">
+                                    ${badge}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </td>
+                    <td>${profileViews}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-save" onclick="saveBadges('${user.username}')" id="saveBtn-${user.username}" style="display: none;">
+                                Save
+                            </button>
+                            <button class="btn btn-view" onclick="viewProfile('${user.username}')">
+                                View Profile
+                            </button>
+                            <button class="btn" onclick="editBadges('${user.username}')" style="background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1);">
+                                Edit Badges
+                            </button>
+                        </div>
+                    </td>
+                `;
+                
+                usersTableBody.appendChild(row);
+            });
+        }
+
+        // Update statistics
+        function updateStats(users) {
+            totalUsersEl.textContent = users.length;
+            
+            // Count profiles (excluding null profiles)
+            const profileCount = users.filter(user => user.profile !== null).length;
+            totalProfilesEl.textContent = profileCount;
+            
+            // Count admin users
+            const adminCount = users.filter(user => user.isAdmin).length;
+            adminUsersEl.textContent = adminCount;
+            
+            // Calculate today's views (simplified - using total views for now)
+            const todayViews = users.reduce((total, user) => {
+                return total + (user.profile?.viewCount || 0);
+            }, 0);
+            todayViewsEl.textContent = todayViews;
+        }
+
+        // Edit badges function
+        function editBadges(username) {
+            const preview = document.getElementById(`badgePreview-${username}`);
+            const selector = document.getElementById(`badgeSelector-${username}`);
+            const saveBtn = document.getElementById(`saveBtn-${username}`);
+            
+            preview.style.display = 'none';
+            selector.style.display = 'flex';
+            saveBtn.style.display = 'block';
+        }
+
+        // Toggle badge selection
+        function toggleBadge(username, badge) {
+            const badgeOption = document.querySelector(`#badgeSelector-${username} .badge-option[data-badge="${badge}"]`);
+            badgeOption.classList.toggle('selected');
+        }
+
+        // Save badges function
+        async function saveBadges(username) {
+            if (!adminSession) return;
+            
+            const badgeOptions = document.querySelectorAll(`#badgeSelector-${username} .badge-option.selected`);
+            const selectedBadges = Array.from(badgeOptions).map(option => option.getAttribute('data-badge'));
+            
+            try {
+                const response = await fetch('/api/admin/update-badges', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': adminSession
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        badges: selectedBadges
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Update UI
+                    const preview = document.getElementById(`badgePreview-${username}`);
+                    const selector = document.getElementById(`badgeSelector-${username}`);
+                    const saveBtn = document.getElementById(`saveBtn-${username}`);
+                    
+                    preview.innerHTML = selectedBadges.length > 0 
+                        ? selectedBadges.map(badge => `<span class="badge-preview-item">${badge}</span>`).join('')
+                        : '<span style="color: rgba(255,255,255,0.3)">No badges</span>';
+                    
+                    selector.style.display = 'none';
+                    saveBtn.style.display = 'none';
+                    preview.style.display = 'flex';
+                    
+                    // Show success message
+                    showTempMessage(`Badges updated for ${username}`, 'success');
+                } else {
+                    showTempMessage(data.error || 'Failed to update badges', 'error');
+                }
+            } catch (error) {
+                showTempMessage('Connection error. Please try again.', 'error');
+                console.error('Save badges error:', error);
+            }
+        }
+
+        // View profile function
+        function viewProfile(username) {
+            window.open(`/${username}`, '_blank');
+        }
+
+        // Show login message
+        function showLoginMessage(message, type) {
+            loginMessage.textContent = message;
+            loginMessage.className = type === 'error' ? 'error-message' : 'success-message';
+        }
+
+        // Show temporary message
+        function showTempMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = type === 'error' ? 'error-message' : 'success-message';
+            messageDiv.textContent = message;
+            messageDiv.style.position = 'fixed';
+            messageDiv.style.top = '20px';
+            messageDiv.style.right = '20px';
+            messageDiv.style.padding = '15px 20px';
+            messageDiv.style.borderRadius = '10px';
+            messageDiv.style.background = type === 'error' ? 'rgba(240, 71, 71, 0.9)' : 'rgba(67, 181, 129, 0.9)';
+            messageDiv.style.zIndex = '1000';
+            
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        }
+
+        // Check for existing session on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedSession = localStorage.getItem('adminSession');
+            if (savedSession) {
+                adminSession = savedSession;
+                loginSection.style.display = 'none';
+                adminDashboard.style.display = 'block';
+                loadUsers();
+            }
+        });
+
+        // Event listeners
+        loginBtn.addEventListener('click', login);
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                login();
+            }
+        });
+        logoutBtn.addEventListener('click', logout);
+    </script>
+</body>
+</html>

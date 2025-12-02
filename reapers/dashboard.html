@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Reaper Bio Links</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .grain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.03;
+            z-index: 100;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: rgba(20, 20, 20, 0.8);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 24px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo img {
+            height: 36px;
+            width: 36px;
+            border-radius: 8px;
+        }
+
+        .logo span {
+            font-size: 20px;
+            font-weight: 600;
+            background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.7) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            margin-bottom: 4px;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 40px;
+            min-height: 100vh;
+        }
+
+        .content-header {
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.7) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Content Cards */
+        .content-card {
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            border-color: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        textarea.form-input {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #0a0a0a;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            background: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: rgba(59, 130, 246, 0.9);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: rgb(59, 130, 246);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: rgb(59, 130, 246);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        /* File Upload */
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .upload-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            margin-bottom: 12px;
+        }
+
+        /* Color Picker */
+        .color-picker {
+            width: 40px;
+            height: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
+        }
+
+        /* Range Slider */
+        .range-slider {
+            width: 100%;
+            height: 4px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+        }
+
+        /* Preview Section */
+        .preview-section {
+            position: sticky;
+            top: 40px;
+        }
+
+        .preview-card {
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .preview-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 16px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .preview-name {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .preview-bio {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 16px;
+        }
+
+        .preview-link {
+            display: inline-block;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            display: none;
+        }
+
+        .alert-success {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+            
+            .main-content {
+                margin-left: 240px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                padding: 16px;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="grain"></div>
+    
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-skull"></i>
+            <span>NM1 Bio Links</span>
+        </div>
+        
+        <div class="nav-section">
+            <div class="nav-title">Dashboard</div>
+            <div class="nav-item active" data-section="overview">
+                <i class="fas fa-home"></i>
+                <span>Overview</span>
+            </div>
+            <div class="nav-item" data-section="profile">
+                <i class="fas fa-user"></i>
+                <span>Profile Settings</span>
+            </div>
+            <div class="nav-item" data-section="appearance">
+                <i class="fas fa-palette"></i>
+                <span>Appearance</span>
+            </div>
+            <div class="nav-item" data-section="media">
+                <i class="fas fa-images"></i>
+                <span>Media & Files</span>
+            </div>
+            <div class="nav-item" data-section="social">
+                <i class="fas fa-share-alt"></i>
+                <span>Social Links</span>
+            </div>
+            <div class="nav-item" data-section="effects">
+                <i class="fas fa-magic"></i>
+                <span>Effects & Particles</span>
+            </div>
+            <div class="nav-item" data-section="badges">
+                <i class="fas fa-award"></i>
+                <span>Badges</span>
+            </div>
+        </div>
+        
+        <div class="nav-section">
+            <div class="nav-title">Account</div>
+            <a href="/" class="nav-item">
+                <i class="fas fa-globe"></i>
+                <span>View My Page</span>
+            </a>
+            <a href="index.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <div class="nav-item" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </div>
+        </div>
+        
+        <div class="nav-section">
+            <div class="nav-title">Quick Stats</div>
+            <div class="nav-item">
+                <i class="fas fa-eye"></i>
+                <span>Views: <span id="quickViews">0</span></span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-calendar"></i>
+                <span>Joined: <span id="quickJoined">-</span></span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Alerts -->
+        <div id="successAlert" class="alert alert-success" style="display: none;">
+            <i class="fas fa-check-circle"></i> Changes saved successfully!
+        </div>
+        
+        <div id="errorAlert" class="alert alert-error" style="display: none;">
+            <i class="fas fa-exclamation-circle"></i> <span id="errorMessage"></span>
+        </div>
+        
+        <!-- Loading -->
+        <div id="loading" class="loading">
+            <i class="fas fa-spinner fa-spin"></i> Loading your profile...
+        </div>
+        
+        <!-- Overview Section -->
+        <div id="overviewSection" class="content-section" style="display: none;">
+            <div class="content-header">
+                <h1>Dashboard Overview</h1>
+                <p class="subtitle">Welcome back, <span id="welcomeUsername">User</span>!</p>
+            </div>
+            
+            <div class="content-card">
+                <div class="card-title">Quick Stats</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Profile Views</label>
+                        <div class="form-input" style="font-size: 24px; text-align: center;" id="overviewViews">0</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Last Updated</label>
+                        <div class="form-input" style="text-align: center;" id="overviewUpdated">-</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content-card">
+                <div class="card-title">Quick Actions</div>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="showSection('profile')">
+                        <i class="fas fa-user-edit"></i> Edit Profile
+                    </button>
+                    <button class="btn btn-secondary" onclick="showSection('media')">
+                        <i class="fas fa-upload"></i> Upload Media
+                    </button>
+                    <a href="/" target="_blank" class="btn btn-secondary">
+                        <i class="fas fa-external-link-alt"></i> View Page
+                    </a>
+                    <button class="btn btn-secondary" onclick="copyProfileLink()">
+                        <i class="fas fa-link"></i> Copy Link
+                    </button>
+                </div>
+            </div>
+            
+            <div class="content-card">
+                <div class="card-title">Your Profile Link</div>
+                <div class="form-group">
+                    <input type="text" class="form-input" id="profileLink" readonly value="Loading...">
+                </div>
+                <button class="btn" onclick="copyProfileLink()">
+                    <i class="fas fa-copy"></i> Copy Link
+                </button>
+            </div>
+        </div>
+        
+        <!-- Profile Settings Section -->
+        <div id="profileSection" class="content-section" style="display: none;">
+            <div class="content-header">
+                <h1>Profile Settings</h1>
+                <p class="subtitle">Customize your basic profile information</p>
+            </div>
+            
+            <div class="content-card">
+                <div class="card-title">Basic Information</div>
+                <div class="form-group">
+                    <label>Display Name</label>
+                    <input type="text" class="form-input" id="displayName" placeholder="Your display name">
+                </div>
+                <div class="form-group">
+                    <label>Bio/Description</label>
+                    <textarea class="form-input" id="profileBio" placeholder="Tell people about yourself..."></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="saveProfile()">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </div>
+        </div>
+        
+        <!-- Appearance Section -->
+        <div id="appearanceSection" class="content-section" style="display: none;">
+            <div class="content-header">
+                <h1>Appearance</h1>
+                <p class="subtitle">Customize how your profile card looks</p>
+            </div>
+            
+            <div class="content-card">
+                <div class="card-title">Card Settings</div>
+                <div class="form-group">
+                    <label style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Card Tilt Effect</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="cardTilt" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Rounded Corners</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="roundedCorners" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label>Card Transparency</label>
+                    <input type="range" class="range-slider" id="cardTransparency" min="10" max="100" value="80">
+                    <div style="text-align: right; font-size: 12px; color: rgba(255, 255, 255, 0.5);">
+                        <span id="transparencyValue">80%</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Card Blur</label>
+                    <input type="range" class="range-slider" id="cardBlur" min="0" max="30" value="10">
+                    <div style="text-align: right; font-size: 12px; color: rgba(255, 255, 255, 0.5);">
+                        <span id="blurValue">10px</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Name Color</label>
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <input type="color" class="color-picker" id="nameColor" value="#ffffff">
+                        <input type="text" class="form-input" id="nameColorText" value="#ffffff" style="flex: 1;">
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" onclick="saveAppearance()">
+                    <i class="fas fa-save"></i> Save Appearance
+                </button>
+            </div>
+        </div>
+        
+        <!-- Media & Files Section -->
+        <div id="mediaSection" class="content-section" style="display: none;">
+            <div class="content-header">
+                <h1>Media & Files</h1>
+                <p class="subtitle">Upload images, videos, and music for your profile</p>
+            </div>
+            
+            <div class="content-card">
+                <div class="card-title">Profile Picture</div>
+                <div style="text-align: center;">
+                    <img id="profilePicPreview" class="upload-preview" src="/public/img/default-avatar.png" alt="Profile Picture">
+                    <div class="file-upload btn">
+                        <i class="fas fa-upload"></i> Choose Profile Picture
+                        <input type="file" id="profilePicUpload" accept="image/*,.gif">
+                    </div>
+                    <p style="font-size: 12px; color: rgba(255, 255, 255, 0.5); margin-top: 8px;">
+                        Supports: PNG, JPG, GIF (Max: 10MB)
+                    </p>
+                </div>
+            </div>
+            
+            <div class="content-card">
+                <div class="card-title">Banner Image</div>
+                <div style="text-align: center;">
+                    <img id="bannerPreview" class="upload-preview" src="/public/img/default-banner.jpg" alt="Banner" style="width: 200px; height: 100px;">
+                    <div class="file-upload btn">
+                        <i class="fas fa-upload"></i> Choose Banner
+                        <input type="file" id="bannerUpload" accept="image/*,.gif,video/*">
+                    </div>
+                    <p style="font-size: 12px; color: rgba(255, 255, 255, 0.5); margin-top: 8px;">
+                        Supports: PNG, JPG, GIF, MP4, WebM (Max: 10MB)
+                    </p>
+                </div>
+            </div>
+            
+            <div class="content-card">
+                <div class="card-title">Background</div>
+                <div style="text-align: center;">
+                    <video id="backgroundPreview" class="upload-preview" autoplay muted loop style="width: 200px; height: 100px;">
+                        <source src="/public/img/default-bg.mp4" type="video/mp4">
+                    </video>
+                    <div class="file-upload btn">
+                        <i class="fas fa-upload"></i> Choose Background
+                        <input type="file" id="backgroundUpload" accept="image/*,.gif,video/*">
+                    </div>
+                    <p style="font-size: 12px; color: rgba(255, 255, 255, 0.5); margin-top: 8px;">
+                        Supports: PNG, JPG, GIF, MP4, WebM (Max: 10MB)
+                    </p>
+                </div>
+            </div>
+            
+            <div class="content-card">
+                <div class="card-title">Background Music</div>
+                <div style="text-align: center;">
+                    <audio id="musicPreview" controls style="width: 100%; margin-bottom: 12px;">
+                        <source src="" type="audio/mpeg">
+                    </audio>
+                    <div class="file-upload btn">
+                        <i class="fas fa-upload"></i> Choose Music
+                        <input type="file" id="musicUpload" accept="audio/*">
+                    </div>
+                    <p style="font-size: 12px; color: rgba(255, 255, 255, 0.5); margin-top: 8px;">
+                        Supports: MP3, WAV, OGG (Max: 10MB)
+                    </p>
+                    <div class="form-group" style="margin-top: 16px;">
+                        <label>Music Volume</label>
+                        <input type="range" class="range-slider" id="musicVolume" min="0" max="100" value="50">
+                        <div style="text-align: right; font-size: 12px; color: rgba(255, 255, 255, 0.5);">
+                            <span id="volumeValue">50%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" onclick="saveMedia()">
+                <i class="fas fa-save"></i> Save All Media
+            </button>
+        </div>
+        
+        <!-- Social Links Section -->
+        <div id="socialSection" class="content-section" style="display: none;">
+            <div class="content-header">
+                <h1>Social Links</h1>
+                <p class="subtitle">Add links to your social media profiles</p>
+            </div>
+            
+            <div class="content-card">
+                <div class="card-title">Social Media Profiles</div>
+                
+                <div class="form-group">
+                    <label><i class="fab fa-discord"></i> Discord</label>
+                    <input type="text" class="form-input" id="discordLink" placeholder="https://discord.com/users/yourid">
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fab fa-github"></i> GitHub</label>
+                    <input type="text" class="form-input" id="githubLink" placeholder="https://github.com/username">
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fab fa-spotify"></i> Spotify</label>
+                    <input type="text" class="form-input" id="spotifyLink" placeholder="https://open.spotify.com/user/id">
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fab fa-twitter"></i> Twitter/X</label>
+                    <input type="text" class="form-input" id="twitterLink" placeholder="https://twitter.com/username">
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fab fa-instagram"></i> Instagram</label>
+                    <input type="text" class="form-input" id="instagramLink" placeholder="https://instagram.com/username">
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fab fa-youtube"></i> YouTube</label>
+                    <input type="text" class="form-input" id="youtubeLink" placeholder="https://youtube.com/@username">
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fab fa-twitch"></i> Twitch</label>
+                    <input type="text" class="form-input" id="twitchLink" placeholder="https://twitch.tv/username">
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-globe"></i> Website</label>
+                    <input type="text" class="form-input" id="websiteLink" placeholder="https://yourwebsite.com">
+                </div>
+                
+                <button class="btn btn-primary" onclick="saveSocialLinks()">
+                    <i class="fas fa-save"></i> Save Social Links
+                </button>
+            </div>
+        </div>
+        
+        <!-- Effects & Particles Section -->
+        <div id="effectsSection" class="content-section" style="display: none;">
+            <div class="content-header">
+                <h1>Effects & Particles</h1>
+                <p class="subtitle">Add cool effects to your profile</p>
+            </div>
+            
+            <div class="content-card">
+                <div class="card-title">Name Effects</div>
+                
+                <div class="form-group">
+                    <label>Name Effect</label>
+                    <select class="form-input" id="nameEffect">
+                        <option value="none">None</option>
+                        <option value="glow">Glow</option>
+                        <option value="rainbow">Rainbow Gradient</option>
+                        <option value="sparkle">Sparkle</option>
+                        <option value="shadow">Shadow</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Name Particles</label>
+                    <select class="form-input" id="nameParticles">
+                        <option value="none">None</option>
+                        <option value="floating">Floating Particles</option>
+                        <option value="sparkles">Sparkles</option>
+                        <option value="hearts">Hearts</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="content-card">
+                <div class="card-title">Background Particles</div>
+                
+                <div class="form-group">
+                    <label>Particle Effect</label>
+                    <select class="form-input" id="backgroundParticles">
+                        <option value="none">None</option>
+                        <option value="snow">Snow</option>
+                        <option value="rain">Rain</option>
+                        <option value="stars">Stars</option>
+                        <option value="matrix">Matrix Code</option>
+                        <option value="bubbles">Bubbles</option>
+                        <option value="confetti">Confetti</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Particle Color</label>
+                    <input type="color" class="color-picker" id="particleColor" value="#ffffff">
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" onclick="saveEffects()">
+                <i class="fas fa-save"></i> Save Effects
+            </button>
+        </div>
+        
+        <!-- Badges Section -->
+        <div id="badgesSection" class="content-section" style="display: none;">
+            <div class="content-header">
+                <h1>Badges</h1>
+                <p class="subtitle">Your earned badges (managed by admins)</p>
+            </div>
+            
+            <div class="content-card">
+                <div class="card-title">Available Badges</div>
+                <div id="badgesList" style="display: flex; flex-wrap: wrap; gap: 12px;">
+                    <!-- Badges will be loaded here -->
+                    <div style="padding: 20px; color: rgba(255, 255, 255, 0.5);">
+                        <i class="fas fa-award"></i> Badges are managed by administrators
+                    </div>
+                </div>
+                <p style="margin-top: 16px; font-size: 14px; color: rgba(255, 255, 255, 0.5);">
+                    <i class="fas fa-info-circle"></i> Badges can only be assigned by site administrators.
+                    Contact an admin if you believe you deserve a badge.
+                </p>
+            </div>
+        </div>
+        
+        <!-- Preview Section (Right Side) -->
+        <div class="preview-section">
+            <div class="content-card preview-card">
+                <div class="card-title">Live Preview</div>
+                <img id="previewAvatar" class="preview-avatar" src="/public/img/default-avatar.png" alt="Avatar">
+                <div class="preview-name" id="previewName">Username</div>
+                <div class="preview-bio" id="previewBio">Your bio will appear here</div>
+                <a href="/" target="_blank" class="preview-link">
+                    <i class="fas fa-external-link-alt"></i> View Live Profile
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let authToken = localStorage.getItem('authToken');
+        let currentProfile = null;
+        let unsavedChanges = false;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!authToken) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Load profile data
+            loadProfileData();
+            
+            // Show overview by default
+            showSection('overview');
+        });
+        
+        function setupEventListeners() {
+            // Navigation
+            document.querySelectorAll('.nav-item[data-section]').forEach(item => {
+                item.addEventListener('click', function() {
+                    const section = this.getAttribute('data-section');
+                    showSection(section);
+                });
+            });
+            
+            // Range sliders
+            document.getElementById('cardTransparency').addEventListener('input', function(e) {
+                document.getElementById('transparencyValue').textContent = e.target.value + '%';
+                updatePreview();
+            });
+            
+            document.getElementById('cardBlur').addEventListener('input', function(e) {
+                document.getElementById('blurValue').textContent = e.target.value + 'px';
+                updatePreview();
+            });
+            
+            document.getElementById('musicVolume').addEventListener('input', function(e) {
+                document.getElementById('volumeValue').textContent = e.target.value + '%';
+            });
+            
+            // Color pickers
+            document.getElementById('nameColor').addEventListener('input', function(e) {
+                document.getElementById('nameColorText').value = e.target.value;
+                updatePreview();
+            });
+            
+            document.getElementById('nameColorText').addEventListener('input', function(e) {
+                document.getElementById('nameColor').value = e.target.value;
+                updatePreview();
+            });
+            
+            // File upload previews
+            document.getElementById('profilePicUpload').addEventListener('change', function(e) {
+                if (e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        document.getElementById('profilePicPreview').src = event.target.result;
+                        document.getElementById('previewAvatar').src = event.target.result;
+                        unsavedChanges = true;
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+            
+            document.getElementById('bannerUpload').addEventListener('change', function(e) {
+                if (e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        document.getElementById('bannerPreview').src = event.target.result;
+                        unsavedChanges = true;
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+            
+            document.getElementById('backgroundUpload').addEventListener('change', function(e) {
+                if (e.target.files[0]) {
+                    const file = e.target.files[0];
+                    const video = document.getElementById('backgroundPreview');
+                    
+                    if (file.type.startsWith('video/')) {
+                        video.src = URL.createObjectURL(file);
+                        video.load();
+                    } else {
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            video.style.display = 'none';
+                            document.getElementById('backgroundPreview').parentElement.innerHTML = 
+                                `<img id="backgroundPreview" class="upload-preview" src="${event.target.result}" style="width: 200px; height: 100px;">`;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                    unsavedChanges = true;
+                }
+            });
+            
+            document.getElementById('musicUpload').addEventListener('change', function(e) {
+                if (e.target.files[0]) {
+                    const audio = document.getElementById('musicPreview');
+                    audio.src = URL.createObjectURL(e.target.files[0]);
+                    audio.load();
+                    unsavedChanges = true;
+                }
+            });
+            
+            // Form inputs for live preview
+            const previewInputs = ['displayName', 'profileBio', 'nameEffect', 'nameParticles', 'backgroundParticles'];
+            previewInputs.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('input', updatePreview);
+                }
+            });
+            
+            // Toggle switches
+            const toggles = ['cardTilt', 'roundedCorners'];
+            toggles.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('change', updatePreview);
+                }
+            });
+            
+            // Warn before leaving with unsaved changes
+            window.addEventListener('beforeunload', function(e) {
+                if (unsavedChanges) {
+                    e.preventDefault();
+                    e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+                }
+            });
+        }
+        
+        async function loadProfileData() {
+            try {
+                const response = await fetch('/api/my-profile', {
+                    headers: {
+                        'Authorization': authToken
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    currentProfile = data.profile;
+                    populateFormData();
+                    updateQuickStats();
+                    updatePreview();
+                    
+                    // Hide loading, show content
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('overviewSection').style.display = 'block';
+                } else {
+                    if (response.status === 401) {
+                        localStorage.removeItem('authToken');
+                        window.location.href = 'login.html';
+                    } else {
+                        showError('Failed to load profile: ' + (data.error || 'Unknown error'));
+                    }
+                }
+            } catch (error) {
+                console.error('Load profile error:', error);
+                showError('Failed to connect to server');
+            }
+        }
+        
+        function populateFormData() {
+            if (!currentProfile) return;
+            
+            // Profile settings
+            document.getElementById('displayName').value = currentProfile.displayName || currentProfile.username;
+            document.getElementById('profileBio').value = currentProfile.bio || '';
+            document.getElementById('badgeGlow').checked = currentProfile.customizations?.badgeGlow ?? true;
+document.getElementById('badgeBackground').checked = currentProfile.customizations?.badgeBackground ?? true;
+document.getElementById('iconGlow').checked = currentProfile.customizations?.iconGlow ?? false;
+document.getElementById('iconBackground').checked = currentProfile.customizations?.iconBackground ?? true;
+
+// Glow color settings
+document.getElementById('badgeGlowColor').value = currentProfile.customizations?.badgeGlowColor || '#ffffff';
+document.getElementById('badgeGlowColorText').value = currentProfile.customizations?.badgeGlowColor || '#ffffff';
+document.getElementById('iconGlowColor').value = currentProfile.customizations?.iconGlowColor || '#ffffff';
+document.getElementById('iconGlowColorText').value = currentProfile.customizations?.iconGlowColor || '#ffffff';
+            // Appearance
+            document.getElementById('cardTilt').checked = currentProfile.customizations?.cardTilt ?? true;
+            document.getElementById('roundedCorners').checked = currentProfile.customizations?.roundedCorners ?? true;
+            document.getElementById('cardTransparency').value = (currentProfile.customizations?.cardTransparency ?? 0.8) * 100;
+            document.getElementById('cardBlur').value = currentProfile.customizations?.cardBlur ?? 10;
+            document.getElementById('nameColor').value = currentProfile.customizations?.nameColor || '#ffffff';
+            document.getElementById('nameColorText').value = currentProfile.customizations?.nameColor || '#ffffff';
+            
+            // Update slider values
+            document.getElementById('transparencyValue').textContent = document.getElementById('cardTransparency').value + '%';
+            document.getElementById('blurValue').textContent = document.getElementById('cardBlur').value + 'px';
+            
+            // Media previews
+            document.getElementById('profilePicPreview').src = currentProfile.profilePic || '/public/img/default-avatar.png';
+            document.getElementById('bannerPreview').src = currentProfile.banner || '/public/img/default-banner.jpg';
+            
+            const bgPreview = document.getElementById('backgroundPreview');
+            if (currentProfile.background && currentProfile.background.includes('.mp4')) {
+                bgPreview.innerHTML = `<source src="${currentProfile.background}" type="video/mp4">`;
+                bgPreview.load();
+            } else if (currentProfile.background) {
+                bgPreview.style.display = 'none';
+                bgPreview.parentElement.innerHTML = 
+                    `<img id="backgroundPreview" class="upload-preview" src="${currentProfile.background}" style="width: 200px; height: 100px;">`;
+            }
+            
+            if (currentProfile.music) {
+                const musicPreview = document.getElementById('musicPreview');
+                musicPreview.innerHTML = `<source src="${currentProfile.music}" type="audio/mpeg">`;
+                musicPreview.load();
+            }
+            
+            document.getElementById('musicVolume').value = currentProfile.customizations?.backgroundMusicVolume || 50;
+            document.getElementById('volumeValue').textContent = document.getElementById('musicVolume').value + '%';
+            
+            // Social links
+            document.getElementById('discordLink').value = currentProfile.socialLinks?.discord || '';
+            document.getElementById('githubLink').value = currentProfile.socialLinks?.github || '';
+            document.getElementById('spotifyLink').value = currentProfile.socialLinks?.spotify || '';
+            document.getElementById('twitterLink').value = currentProfile.socialLinks?.twitter || '';
+            document.getElementById('instagramLink').value = currentProfile.socialLinks?.instagram || '';
+            document.getElementById('youtubeLink').value = currentProfile.socialLinks?.youtube || '';
+            document.getElementById('twitchLink').value = currentProfile.socialLinks?.twitch || '';
+            document.getElementById('websiteLink').value = currentProfile.socialLinks?.website || '';
+            
+            // Effects
+            document.getElementById('nameEffect').value = currentProfile.customizations?.nameEffect || 'none';
+            document.getElementById('nameParticles').value = currentProfile.customizations?.nameParticles || 'none';
+            document.getElementById('backgroundParticles').value = currentProfile.customizations?.backgroundParticles || 'none';
+            document.getElementById('particleColor').value = currentProfile.customizations?.particleColor || '#ffffff';
+            
+            // Profile link
+            document.getElementById('profileLink').value = window.location.origin + '/' + currentProfile.username;
+            
+            // Welcome message
+            document.getElementById('welcomeUsername').textContent = currentProfile.displayName || currentProfile.username;
+            
+            // Reset unsaved changes flag
+            unsavedChanges = false;
+        }
+        
+        function updateQuickStats() {
+            if (!currentProfile) return;
+            
+            document.getElementById('quickViews').textContent = currentProfile.viewCount || 0;
+            document.getElementById('quickJoined').textContent = new Date(currentProfile.createdAt).toLocaleDateString();
+            
+            document.getElementById('overviewViews').textContent = currentProfile.viewCount || 0;
+            document.getElementById('overviewUpdated').textContent = new Date(currentProfile.updatedAt).toLocaleDateString() + ' ' + 
+                new Date(currentProfile.updatedAt).toLocaleTimeString();
+        }
+        
+        function updatePreview() {
+            if (!currentProfile) return;
+            
+            // Update preview name
+            const displayName = document.getElementById('displayName').value || currentProfile.username;
+            document.getElementById('previewName').textContent = displayName;
+            
+            // Update preview bio
+            const bio = document.getElementById('profileBio').value || 'Your bio will appear here';
+            document.getElementById('previewBio').textContent = bio;
+            
+            // Update name color in preview
+            const nameColor = document.getElementById('nameColor').value;
+            document.getElementById('previewName').style.color = nameColor;
+            
+            // Update name effect
+            const nameEffect = document.getElementById('nameEffect').value;
+            document.getElementById('previewName').className = 'preview-name';
+            if (nameEffect !== 'none') {
+                document.getElementById('previewName').classList.add('name-' + nameEffect);
+            }
+            
+            unsavedChanges = true;
+        }
+        
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId + 'Section').style.display = 'block';
+            
+            // Update active nav item
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            document.querySelector(`.nav-item[data-section="${sectionId}"]`).classList.add('active');
+        }
+        
+        async function saveProfile() {
+            try {
+                const updates = {
+                    displayName: document.getElementById('displayName').value,
+                    bio: document.getElementById('profileBio').value
+                };
+                
+                await saveUpdates(updates, 'Profile updated successfully!');
+            } catch (error) {
+                showError('Failed to save profile: ' + error.message);
+            }
+        }
+        
+        async function saveAppearance() {
+            try {
+                const updates = {
+                    customizations: {
+                        ...currentProfile.customizations,
+                        cardTilt: document.getElementById('cardTilt').checked,
+                        roundedCorners: document.getElementById('roundedCorners').checked,
+                        cardTransparency: parseInt(document.getElementById('cardTransparency').value) / 100,
+                        cardBlur: parseInt(document.getElementById('cardBlur').value),
+                        nameColor: document.getElementById('nameColor').value
+                    }
+                };
+                
+                await saveUpdates(updates, 'Appearance updated successfully!');
+            } catch (error) {
+                showError('Failed to save appearance: ' + error.message);
+            }
+        }
+        
+        async function saveMedia() {
+            try {
+                const formData = new FormData();
+                
+                // Add files to form data
+                const profilePic = document.getElementById('profilePicUpload').files[0];
+                const banner = document.getElementById('bannerUpload').files[0];
+                const background = document.getElementById('backgroundUpload').files[0];
+                const music = document.getElementById('musicUpload').files[0];
+                
+                if (profilePic) formData.append('profilePic', profilePic);
+                if (banner) formData.append('banner', banner);
+                if (background) formData.append('background', background);
+                if (music) formData.append('music', music);
+                
+                // Add other updates
+                const updates = {
+                    customizations: {
+                        ...currentProfile.customizations,
+                        backgroundMusicVolume: parseInt(document.getElementById('musicVolume').value)
+                    }
+                };
+                
+                formData.append('updates', JSON.stringify(updates));
+                
+                const response = await fetch('/api/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': authToken
+                    },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    currentProfile = data.profile;
+                    showSuccess('Media files uploaded successfully!');
+                    unsavedChanges = false;
+                    
+                    // Clear file inputs
+                    document.getElementById('profilePicUpload').value = '';
+                    document.getElementById('bannerUpload').value = '';
+                    document.getElementById('backgroundUpload').value = '';
+                    document.getElementById('musicUpload').value = '';
+                } else {
+                    throw new Error(data.error || 'Failed to upload media');
+                }
+            } catch (error) {
+                showError('Failed to save media: ' + error.message);
+            }
+        }
+        
+        async function saveSocialLinks() {
+            try {
+                const updates = {
+                    socialLinks: {
+                        discord: document.getElementById('discordLink').value,
+                        github: document.getElementById('githubLink').value,
+                        spotify: document.getElementById('spotifyLink').value,
+                        twitter: document.getElementById('twitterLink').value,
+                        instagram: document.getElementById('instagramLink').value,
+                        youtube: document.getElementById('youtubeLink').value,
+                        twitch: document.getElementById('twitchLink').value,
+                        website: document.getElementById('websiteLink').value
+                    }
+                };
+                
+                await saveUpdates(updates, 'Social links updated successfully!');
+            } catch (error) {
+                showError('Failed to save social links: ' + error.message);
+            }
+        }
+        
+        async function saveEffects() {
+            try {
+                const updates = {
+                    customizations: {
+                        ...currentProfile.customizations,
+                        nameEffect: document.getElementById('nameEffect').value,
+                        nameParticles: document.getElementById('nameParticles').value,
+                        backgroundParticles: document.getElementById('backgroundParticles').value,
+                        particleColor: document.getElementById('particleColor').value
+                    }
+                };
+                
+                await saveUpdates(updates, 'Effects updated successfully!');
+            } catch (error) {
+                showError('Failed to save effects: ' + error.message);
+            }
+        }
+        
+        async function saveUpdates(updates, successMessage) {
+            try {
+                const formData = new FormData();
+                formData.append('updates', JSON.stringify(updates));
+                
+                const response = await fetch('/api/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': authToken
+                    },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    currentProfile = data.profile;
+                    showSuccess(successMessage);
+                    unsavedChanges = false;
+                    updateQuickStats();
+                } else {
+                    throw new Error(data.error || 'Failed to save changes');
+                }
+            } catch (error) {
+                throw error;
+            }
+        }
+        
+        function copyProfileLink() {
+            const link = document.getElementById('profileLink');
+            link.select();
+            link.setSelectionRange(0, 99999); // For mobile devices
+            navigator.clipboard.writeText(link.value)
+                .then(() => showSuccess('Link copied to clipboard!'))
+                .catch(() => {
+                    // Fallback for older browsers
+                    document.execCommand('copy');
+                    showSuccess('Link copied to clipboard!');
+                });
+        }
+        
+        function showSuccess(message) {
+            const alert = document.getElementById('successAlert');
+            alert.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+        
+        function showError(message) {
+            const alert = document.getElementById('errorAlert');
+            document.getElementById('errorMessage').textContent = message;
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+        
+        function logout() {
+            localStorage.removeItem('authToken');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

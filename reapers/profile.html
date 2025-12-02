@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="#2F3136" name="theme-color">
+    <title>NM1 Bio Link</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Satoshi", sans-serif;
+            width: 100%;
+            min-height: 100vh;
+            background-color: rgb(22, 22, 22);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .background-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+        }
+
+        .background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: -1;
+        }
+
+        /* Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Name Effects */
+        .name-glow {
+            text-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
+        }
+
+        .name-rainbow {
+            background: linear-gradient(90deg, #ff0000, #ff9900, #ffff00, #00ff00, #0099ff, #6600ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .name-sparkle {
+            position: relative;
+            display: inline-block;
+        }
+
+        .name-sparkle::after {
+            content: '✨';
+            position: absolute;
+            top: -10px;
+            right: -15px;
+            font-size: 0.5em;
+        }
+
+        /* Glow effects for badges and icons */
+        .profileBadge.glow {
+            box-shadow: 0 0 15px var(--badge-glow-color, #ffffff),
+                        0 0 30px var(--badge-glow-color, #ffffff);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .linkedAccountsRedirect.glow img {
+            filter: drop-shadow(0 0 10px var(--icon-glow-color, #ffffff))
+                    drop-shadow(0 0 20px var(--icon-glow-color, #ffffff));
+            transition: filter 0.3s ease;
+        }
+
+        /* When background is disabled */
+        .profileBadge.no-bg {
+            background: transparent !important;
+            border: none !important;
+        }
+
+        .linkedAccountsRedirect.no-bg {
+            background: transparent !important;
+        }
+
+        .container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            backdrop-filter: blur(var(--card-blur, 10px));
+            background: rgba(255, 255, 255, var(--card-transparency, 0.1));
+            border-radius: var(--card-radius, 15px);
+            min-height: 15rem;
+            padding: 35px 15px;
+            width: 100%;
+            max-width: 650px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease;
+            margin: 20px;
+        }
+
+        .container.tilt {
+            transform: perspective(1000px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+        }
+
+        .container .banner {
+            position: absolute;
+            top: 0;
+            display: block;
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: var(--card-radius, 15px) var(--card-radius, 15px) 0 0;
+        }
+
+        .container .avatar {
+            margin-top: 50px;
+            z-index: 1;
+            border-radius: 50%;
+            height: 115px;
+            width: 115px;
+            object-fit: cover;
+            outline: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .container .profileLayout {
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-width: 27rem;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .container .profileLayout .profileUsername {
+            font-weight: 600;
+            font-size: 36.5px;
+            width: fit-content;
+            margin-bottom: 5px;
+            color: var(--name-color, #ffffff);
+        }
+
+        .container .profileLayout .profileBadges {
+            margin-bottom: 17px;
+            margin-top: 8px;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.04);
+            border-radius: 25px;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            padding: 6px 12px;
+        }
+
+        .container .profileLayout .profileBadges .profileBadge {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .container .profileLayout .profileBadges .profileBadge img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+            filter: brightness(1.2);
+        }
+
+        .container .profileLayout .profileBadges .profileBadge::before {
+            content: attr(data-tooltip);
+            background-color: rgba(0, 0, 0, 0.9);
+            opacity: 0;
+            color: white;
+            position: absolute;
+            font-size: 14px;
+            font-weight: 600;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 8px;
+            padding: 4px 12px;
+            z-index: 10;
+            transition: opacity .3s;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        .container .profileLayout .profileBadges .profileBadge:hover::before {
+            opacity: 1;
+        }
+
+        .container .profileLayout .profileBio {
+            font-weight: 570;
+            font-size: 17px;
+            margin-top: 5px;
+            color: rgba(255, 255, 255, 0.9);
+            min-height: 23px;
+            max-width: 100%;
+            word-wrap: break-word;
+        }
+
+        .container .linkedAccounts {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .container .linkedAccounts .linkedAccountsRedirect {
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding: 6px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .container .linkedAccounts .linkedAccountsRedirect:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .container .linkedAccounts .linkedAccountsRedirect img {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            transition: transform 0.3s ease, filter 0.3s ease;
+        }
+
+        .container .linkedAccounts .linkedAccountsRedirect:hover img {
+            transform: scale(1.1);
+            filter: brightness(1.2);
+        }
+
+        .container .linkedAccounts .linkedAccountsRedirect::before {
+            content: attr(data-type);
+            opacity: 0;
+            color: white;
+            position: absolute;
+            font-size: 14px;
+            font-weight: 600;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 8px;
+            padding: 4px 12px;
+            z-index: 10;
+            transition: opacity .3s;
+            background: rgba(0, 0, 0, 0.9);
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        .container .linkedAccounts .linkedAccountsRedirect:hover::before {
+            opacity: 1;
+        }
+
+        .container .linkedAccountsRedirect {
+            text-decoration: none;
+            color: white;
+        }
+
+        .container .profileViews {
+            display: flex;
+            align-items: center;
+            gap: .25rem;
+            padding: 5px 10px;
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .container .profileViews i {
+            font-style: normal;
+        }
+
+        /* Music Player */
+        .music-player {
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 10px 15px;
+            border-radius: 25px;
+        }
+
+        .music-player button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .music-player input[type="range"] {
+            width: 100px;
+        }
+
+        /* Scrollbar */
+        *::-webkit-scrollbar {
+            height: 7px;
+            width: 7px;
+        }
+
+        *::-webkit-scrollbar-track {
+            border-radius: 5px;
+            background-color: rgba(22, 22, 22, 0.5);
+        }
+
+        *::-webkit-scrollbar-thumb {
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 25px 10px;
+                max-width: 95%;
+            }
+
+            .container .avatar {
+                height: 90px;
+                width: 90px;
+            }
+
+            .container .profileLayout .profileUsername {
+                font-size: 28px;
+            }
+
+            .container .profileLayout .profileBio {
+                font-size: 15px;
+            }
+
+            .container .linkedAccounts {
+                gap: 0.8rem;
+            }
+
+            .container .linkedAccounts .linkedAccountsRedirect img {
+                width: 28px;
+                height: 28px;
+            }
+        }
+    </style>
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@1&amp;f[]=array@400&amp;display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Dynamic background -->
+    <video class="background-video" id="backgroundVideo" autoplay muted loop>
+        <source src="/public/img/default-bg.mp4" type="video/mp4">
+    </video>
+    
+    <!-- Background overlay -->
+    <div class="background-overlay"></div>
+    
+    <!-- Particles container -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Profile container -->
+    <div class="container" id="profileContainer">
+        <!-- Banner -->
+        <img class="banner" id="profileBanner" src="/public/img/default-banner.jpg" alt="Banner">
+        
+        <!-- Avatar -->
+        <img class="avatar" id="profileAvatar" src="/public/img/default-avatar.png" alt="Avatar">
+        
+        <!-- Profile info -->
+        <div class="profileLayout">
+            <h1 class="profileUsername" id="profileUsername">Loading...</h1>
+            
+            <!-- Badges -->
+            <div class="profileBadges" id="profileBadges">
+                <!-- Badges will be loaded here -->
+            </div>
+            
+            <!-- Bio -->
+            <h3 class="profileBio" id="profileBio">Loading bio...</h3>
+        </div>
+
+        <!-- Social Links -->
+        <div class="linkedAccounts" id="socialLinks">
+            <!-- Social links will be loaded here -->
+        </div>
+
+        <!-- View Count -->
+        <div class="profileViews">
+            <i class="fas fa-eye"></i>
+            <span id="viewCount">0</span> views
+        </div>
+    </div>
+
+    <!-- Music Player (if music is set) -->
+    <div class="music-player" id="musicPlayer" style="display: none; position: fixed; bottom: 20px; right: 20px;">
+        <button id="playPauseBtn">▶️</button>
+        <input type="range" id="volumeSlider" min="0" max="100" value="50">
+        <audio id="backgroundMusic" loop>
+            <source src="" type="audio/mpeg">
+        </audio>
+    </div>
+
+    <script>
+        // Get username from URL
+        const pathParts = window.location.pathname.split('/');
+        const username = pathParts[pathParts.length - 1] || pathParts[pathParts.length - 2];
+        
+        // Load profile data
+        async function loadProfile() {
+            try {
+                const response = await fetch(`/api/profile/${username}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const profile = data.profile;
+                    
+                    // Set profile data
+                    document.getElementById('profileUsername').textContent = profile.displayName || profile.username;
+                    document.getElementById('profileBio').textContent = profile.bio || '';
+                    document.getElementById('viewCount').textContent = profile.viewCount || 0;
+                    
+                    // Set colors
+                    if (profile.customizations?.nameColor) {
+                        document.documentElement.style.setProperty('--name-color', profile.customizations.nameColor);
+                    }
+                    
+                    // Set glow colors
+                    if (profile.customizations?.badgeGlowColor) {
+                        document.documentElement.style.setProperty('--badge-glow-color', profile.customizations.badgeGlowColor);
+                    }
+                    
+                    if (profile.customizations?.iconGlowColor) {
+                        document.documentElement.style.setProperty('--icon-glow-color', profile.customizations.iconGlowColor);
+                    }
+                    
+                    // Set card styles
+                    if (profile.customizations) {
+                        const container = document.getElementById('profileContainer');
+                        
+                        // Card tilt
+                        if (profile.customizations.cardTilt) {
+                            container.classList.add('tilt');
+                            container.addEventListener('mousemove', handleTilt);
+                            container.addEventListener('mouseleave', resetTilt);
+                        }
+                        
+                        // Card transparency and blur
+                        if (profile.customizations.cardTransparency !== undefined) {
+                            document.documentElement.style.setProperty('--card-transparency', profile.customizations.cardTransparency / 100);
+                        }
+                        
+                        if (profile.customizations.cardBlur !== undefined) {
+                            document.documentElement.style.setProperty('--card-blur', `${profile.customizations.cardBlur}px`);
+                        }
+                        
+                        // Rounded corners
+                        if (profile.customizations.roundedCorners === false) {
+                            document.documentElement.style.setProperty('--card-radius', '0px');
+                        }
+                        
+                        // Name effect
+                        if (profile.customizations.nameEffect && profile.customizations.nameEffect !== 'none') {
+                            const nameElement = document.getElementById('profileUsername');
+                            nameElement.classList.add(`name-${profile.customizations.nameEffect}`);
+                        }
+                    }
+                    
+                    // Set background
+                    if (profile.background) {
+                        const video = document.getElementById('backgroundVideo');
+                        video.src = profile.background;
+                        video.load();
+                    }
+                    
+                    // Set banner
+                    if (profile.banner) {
+                        document.getElementById('profileBanner').src = profile.banner;
+                    }
+                    
+                    // Set avatar
+                    if (profile.profilePic) {
+                        document.getElementById('profileAvatar').src = profile.profilePic;
+                    }
+                    
+                    // Load badges
+                    loadBadges(profile.badges, profile.customizations);
+                    
+                    // Load social links
+                    loadSocialLinks(profile.socialLinks, profile.customizations);
+                    
+                    // Setup music if available
+                    if (profile.music) {
+                        setupMusicPlayer(profile.music, profile.customizations?.backgroundMusicVolume || 50);
+                    }
+                    
+                    // Setup particles
+                    if (profile.customizations?.backgroundParticles && profile.customizations.backgroundParticles !== 'none') {
+                        setupParticles(profile.customizations.backgroundParticles);
+                    }
+                    
+                    if (profile.customizations?.nameParticles && profile.customizations.nameParticles !== 'none') {
+                        setupNameParticles(profile.customizations.nameParticles);
+                    }
+                    
+                } else {
+                    document.getElementById('profileUsername').textContent = 'Profile not found';
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                document.getElementById('profileUsername').textContent = 'Error loading profile';
+            }
+        }
+        
+        // Load badges with PNG icons
+        function loadBadges(badges, customizations) {
+            const badgesContainer = document.getElementById('profileBadges');
+            badgesContainer.innerHTML = '';
+            
+            const badgeConfig = {
+                'staff': { icon: '/icon/staff.png', tooltip: 'Staff Member' },
+                'certif': { icon: '/icon/verified.png', tooltip: 'Verified User' },
+                'dev': { icon: '/icon/developer.png', tooltip: 'Developer' },
+                'premium': { icon: '/icon/premium.png', tooltip: 'Premium User' },
+                'booster': { icon: '/icon/booster.png', tooltip: 'Server Booster' },
+                'bughunter': { icon: '/icon/bughunter.png', tooltip: 'Bug Hunter' },
+                'earlysupporter': { icon: '/icon/early.png', tooltip: 'Early Supporter' },
+                'graphic': { icon: '/icon/designer.png', tooltip: 'Graphic Designer' }
+            };
+            
+            badges.forEach(badge => {
+                if (badgeConfig[badge]) {
+                    const badgeElement = document.createElement('div');
+                    badgeElement.className = 'profileBadge';
+                    badgeElement.setAttribute('data-tooltip', badgeConfig[badge].tooltip);
+                    
+                    // Apply glow effect if enabled
+                    if (customizations?.badgeGlow !== false) {
+                        badgeElement.classList.add('glow');
+                    }
+                    
+                    // Apply background setting
+                    if (customizations?.badgeBackground === false) {
+                        badgeElement.classList.add('no-bg');
+                    }
+                    
+                    // Create image for badge
+                    const img = document.createElement('img');
+                    img.src = badgeConfig[badge].icon;
+                    img.alt = badgeConfig[badge].tooltip;
+                    img.style.width = '20px';
+                    img.style.height = '20px';
+                    
+                    badgeElement.appendChild(img);
+                    badgesContainer.appendChild(badgeElement);
+                }
+            });
+            
+            // If no badges, hide the container
+            if (badges.length === 0) {
+                badgesContainer.style.display = 'none';
+            }
+        }
+        
+        // Load social links with PNG icons
+        function loadSocialLinks(links, customizations) {
+            const linksContainer = document.getElementById('socialLinks');
+            linksContainer.innerHTML = '';
+            
+            const linkConfig = {
+                'discord': { icon: '/icon/discord.png', name: 'Discord' },
+                'github': { icon: '/icon/github.png', name: 'GitHub' },
+                'spotify': { icon: '/icon/spotify.png', name: 'Spotify' },
+                'twitter': { icon: '/icon/twitter.png', name: 'Twitter' },
+                'instagram': { icon: '/icon/insta.png', name: 'Instagram' },
+                'youtube': { icon: '/icon/youtube.png', name: 'YouTube' },
+                'twitch': { icon: '/icon/twitch.png', name: 'Twitch' },
+                'website': { icon: '/icon/globe.png', name: 'Website' },
+                'roblox': { icon: '/icon/roblox.png', name: 'Roblox' }
+            };
+            
+            let hasLinks = false;
+            
+            Object.entries(links).forEach(([platform, url]) => {
+                if (url && linkConfig[platform]) {
+                    hasLinks = true;
+                    const linkElement = document.createElement('a');
+                    linkElement.className = 'linkedAccountsRedirect';
+                    linkElement.setAttribute('data-type', linkConfig[platform].name);
+                    linkElement.setAttribute('href', url);
+                    linkElement.setAttribute('target', '_blank');
+                    linkElement.setAttribute('rel', 'noopener noreferrer');
+                    
+                    // Apply glow effect if enabled
+                    if (customizations?.iconGlow) {
+                        linkElement.classList.add('glow');
+                    }
+                    
+                    // Apply background setting
+                    if (customizations?.iconBackground === false) {
+                        linkElement.classList.add('no-bg');
+                    }
+                    
+                    // Create image element
+                    const img = document.createElement('img');
+                    img.src = linkConfig[platform].icon;
+                    img.alt = linkConfig[platform].name;
+                    img.loading = 'lazy';
+                    
+                    linkElement.appendChild(img);
+                    linksContainer.appendChild(linkElement);
+                }
+            });
+            
+            // If no links, hide the container
+            if (!hasLinks) {
+                linksContainer.style.display = 'none';
+            }
+        }
+        
+        // Setup music player
+        function setupMusicPlayer(musicUrl, volume) {
+            const musicPlayer = document.getElementById('musicPlayer');
+            const audio = document.getElementById('backgroundMusic');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            const volumeSlider = document.getElementById('volumeSlider');
+            
+            audio.src = musicUrl;
+            audio.volume = volume / 100;
+            volumeSlider.value = volume;
+            
+            playPauseBtn.addEventListener('click', () => {
+                if (audio.paused) {
+                    audio.play();
+                    playPauseBtn.textContent = '⏸️';
+                } else {
+                    audio.pause();
+                    playPauseBtn.textContent = '▶️';
+                }
+            });
+            
+            volumeSlider.addEventListener('input', (e) => {
+                audio.volume = e.target.value / 100;
+            });
+            
+            musicPlayer.style.display = 'flex';
+        }
+        
+        // Card tilt effect
+        function handleTilt(e) {
+            const container = e.currentTarget;
+            const rect = container.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const rotateY = ((x - centerX) / centerX) * 10;
+            const rotateX = ((centerY - y) / centerY) * 10;
+            
+            container.style.setProperty('--tilt-x', `${rotateX}deg`);
+            container.style.setProperty('--tilt-y', `${rotateY}deg`);
+        }
+        
+        function resetTilt(e) {
+            const container = e.currentTarget;
+            container.style.setProperty('--tilt-x', '0deg');
+            container.style.setProperty('--tilt-y', '0deg');
+        }
+        
+        // Particle systems
+        function setupParticles(type) {
+            const container = document.getElementById('particles');
+            
+            if (type === 'snow') {
+                createSnowParticles(container);
+            } else if (type === 'rain') {
+                createRainParticles(container);
+            } else if (type === 'matrix') {
+                createMatrixParticles(container);
+            } else if (type === 'stars') {
+                createStarParticles(container);
+            }
+        }
+        
+        function createSnowParticles(container) {
+            for (let i = 0; i < 50; i++) {
+                const snow = document.createElement('div');
+                snow.style.position = 'absolute';
+                snow.style.width = '5px';
+                snow.style.height = '5px';
+                snow.style.backgroundColor = 'white';
+                snow.style.borderRadius = '50%';
+                snow.style.left = `${Math.random() * 100}%`;
+                snow.style.top = '-5px';
+                snow.style.opacity = Math.random() * 0.5 + 0.3;
+                
+                const duration = Math.random() * 5 + 5;
+                const delay = Math.random() * 5;
+                
+                snow.style.animation = `fall ${duration}s linear ${delay}s infinite`;
+                
+                container.appendChild(snow);
+            }
+            
+            // Add animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fall {
+                    to {
+                        transform: translateY(100vh);
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        function createRainParticles(container) {
+            for (let i = 0; i < 100; i++) {
+                const rain = document.createElement('div');
+                rain.style.position = 'absolute';
+                rain.style.width = '1px';
+                rain.style.height = '20px';
+                rain.style.backgroundColor = '#66ccff';
+                rain.style.left = `${Math.random() * 100}%`;
+                rain.style.top = '-20px';
+                rain.style.opacity = Math.random() * 0.5 + 0.3;
+                
+                const duration = Math.random() * 1 + 0.5;
+                const delay = Math.random() * 2;
+                
+                rain.style.animation = `rain ${duration}s linear ${delay}s infinite`;
+                
+                container.appendChild(rain);
+            }
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes rain {
+                    to {
+                        transform: translateY(100vh);
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        function createStarParticles(container) {
+            for (let i = 0; i < 30; i++) {
+                const star = document.createElement('div');
+                star.style.position = 'absolute';
+                star.style.width = `${Math.random() * 3 + 1}px`;
+                star.style.height = star.style.width;
+                star.style.backgroundColor = 'white';
+                star.style.borderRadius = '50%';
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.opacity = Math.random() * 0.7 + 0.3;
+                star.style.boxShadow = '0 0 10px white';
+                
+                star.style.animation = `twinkle ${Math.random() * 3 + 2}s ease-in-out infinite alternate`;
+                
+                container.appendChild(star);
+            }
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes twinkle {
+                    from { opacity: 0.3; }
+                    to { opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // Name particles
+        function setupNameParticles(type) {
+            const nameElement = document.getElementById('profileUsername');
+            
+            if (type === 'floating') {
+                createFloatingParticles(nameElement);
+            }
+        }
+        
+        function createFloatingParticles(nameElement) {
+            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+            
+            setInterval(() => {
+                const particle = document.createElement('div');
+                particle.style.position = 'absolute';
+                particle.style.width = '3px';
+                particle.style.height = '3px';
+                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.borderRadius = '50%';
+                
+                const rect = nameElement.getBoundingClientRect();
+                particle.style.left = `${rect.left + Math.random() * rect.width}px`;
+                particle.style.top = `${rect.top + Math.random() * rect.height}px`;
+                
+                particle.style.animation = `floatUp 2s ease-out forwards`;
+                
+                document.body.appendChild(particle);
+                
+                setTimeout(() => particle.remove(), 2000);
+            }, 100);
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes floatUp {
+                    0% {
+                        transform: translateY(0) scale(1);
+                        opacity: 1;
+                    }
+                    100% {
+                        transform: translateY(-50px) scale(0);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // Load profile on page load
+        document.addEventListener('DOMContentLoaded', loadProfile);
+    </script>
+</body>
+</html>

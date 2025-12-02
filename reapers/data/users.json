@@ -1,0 +1,16 @@
+{
+  "admin": {
+    "username": "admin",
+    "email": "admin@reapers.lol",
+    "password": "admin",
+    "createdAt": "2025-12-02T13:06:08.520Z",
+    "isAdmin": true
+  },
+  "juju": {
+    "username": "juju",
+    "email": "vursblanked@gmail.com",
+    "password": "12345678",
+    "createdAt": "2025-12-02T13:12:47.388Z",
+    "isAdmin": false
+  }
+}
